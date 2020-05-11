@@ -1,0 +1,827 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="OnlineShopModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Customer">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CustomerCode" Type="int" />
+          <Property Name="FirstName" Type="nvarchar" MaxLength="60" />
+          <Property Name="LastName" Type="nvarchar" MaxLength="60" Nullable="false" />
+          <Property Name="Adrs" Type="nvarchar(max)" />
+          <Property Name="City" Type="nvarchar" MaxLength="15" />
+          <Property Name="Region" Type="nvarchar" MaxLength="15" />
+          <Property Name="Country" Type="nvarchar" MaxLength="15" />
+          <Property Name="PostalCode" Type="nvarchar" MaxLength="15" />
+          <Property Name="Phone" Type="nvarchar" MaxLength="24" />
+          <Property Name="Email" Type="nvarchar" MaxLength="40" />
+        </EntityType>
+        <EntityType Name="OrderDetails">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UnitPrice" Type="money" Nullable="false" />
+          <Property Name="Discount" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="TaxRate" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="Quantity" Type="int" Nullable="false" />
+          <Property Name="Product_Ref" Type="int" Nullable="false" />
+          <Property Name="OrderMaster_Ref" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="OrderMaster">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="OrderCode" Type="int" Nullable="false" />
+          <Property Name="OrderDate" Type="datetime" Nullable="false" />
+          <Property Name="Customer_Ref" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Product">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ProductCode" Type="int" Nullable="false" />
+          <Property Name="ProductName" Type="nvarchar" MaxLength="60" Nullable="false" />
+          <Property Name="ProductDescription" Type="nvarchar" MaxLength="260" />
+          <Property Name="UnitPrice" Type="money" />
+          <Property Name="Category_Ref" Type="int" />
+        </EntityType>
+        <EntityType Name="ProductCategory">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CategoryCode" Type="int" Nullable="false" />
+          <Property Name="CategoryName" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <Association Name="FK__OrderDeta__Order__49C3F6B7">
+          <End Role="OrderMaster" Type="Self.OrderMaster" Multiplicity="1" />
+          <End Role="OrderDetails" Type="Self.OrderDetails" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="OrderMaster">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="OrderDetails">
+              <PropertyRef Name="OrderMaster_Ref" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Product__Categor__276EDEB3">
+          <End Role="ProductCategory" Type="Self.ProductCategory" Multiplicity="0..1" />
+          <End Role="Product" Type="Self.Product" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ProductCategory">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Product">
+              <PropertyRef Name="Category_Ref" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_OrderMaster_Customer">
+          <End Role="Customer" Type="Self.Customer" Multiplicity="1" />
+          <End Role="OrderMaster" Type="Self.OrderMaster" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Customer">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="OrderMaster">
+              <PropertyRef Name="Customer_Ref" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Function Name="usp_Customer_Select" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="usp_DeleteFromCategory" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="id" Type="int" Mode="In" />
+        </Function>
+        <Function Name="usp_DeleteFromCustomer" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="id" Type="int" Mode="In" />
+        </Function>
+        <Function Name="usp_DeleteFromProduct" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="id" Type="int" Mode="In" />
+        </Function>
+        <Function Name="usp_GenerateCodeForOrder" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="orderCode" Type="int" Mode="InOut" />
+        </Function>
+        <Function Name="usp_GetOrderDetailsGivenOrderMasterId" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="orderMasterId" Type="int" Mode="In" />
+        </Function>
+        <Function Name="usp_InsertCustomerInfo" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="firstName" Type="nvarchar" Mode="In" />
+          <Parameter Name="lastName" Type="nvarchar" Mode="In" />
+          <Parameter Name="adrs" Type="nvarchar(max)" Mode="In" />
+          <Parameter Name="city" Type="nvarchar" Mode="In" />
+          <Parameter Name="region" Type="nvarchar" Mode="In" />
+          <Parameter Name="country" Type="nvarchar" Mode="In" />
+          <Parameter Name="postalCode" Type="nvarchar" Mode="In" />
+          <Parameter Name="phone" Type="nvarchar" Mode="In" />
+          <Parameter Name="email" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="usp_InsertProductCategoryInfo" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="categoryName" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="usp_InsertProductInfo" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="productName" Type="nvarchar" Mode="In" />
+          <Parameter Name="productDescription" Type="nvarchar" Mode="In" />
+          <Parameter Name="unitPrice" Type="money" Mode="In" />
+          <Parameter Name="category_Ref" Type="int" Mode="In" />
+        </Function>
+        <Function Name="usp_OrderMaster_Select" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="usp_OrderMasterDetails_Delete" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="id" Type="int" Mode="In" />
+        </Function>
+        <Function Name="usp_OrderMasterDetails_Insert" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="orderCode" Type="int" Mode="In" />
+          <Parameter Name="orderDate" Type="datetime" Mode="In" />
+          <Parameter Name="customer_Ref" Type="int" Mode="In" />
+        </Function>
+        <Function Name="usp_OrderMasterDetails_Update" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="idMaster" Type="int" Mode="In" />
+          <Parameter Name="orderCode" Type="int" Mode="In" />
+          <Parameter Name="orderDate" Type="datetime" Mode="In" />
+          <Parameter Name="customer_Ref" Type="int" Mode="In" />
+        </Function>
+        <Function Name="usp_Product_Select" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="usp_Product_SelectWithCategoryCode" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="usp_ProductCategory_Select" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="usp_SelectCategoryCode" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="usp_SelectCustomerInfo" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="usp_SelectCustomerNameGivenId" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="id" Type="int" Mode="In" />
+          <Parameter Name="firstName" Type="nvarchar" Mode="InOut" />
+          <Parameter Name="lastName" Type="nvarchar" Mode="InOut" />
+        </Function>
+        <Function Name="usp_SelectProductInfo" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="usp_SelectProductNameGivenId" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="id" Type="int" Mode="In" />
+          <Parameter Name="productName" Type="nvarchar" Mode="InOut" />
+        </Function>
+        <Function Name="usp_UpdateCategory" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="id" Type="int" Mode="In" />
+          <Parameter Name="categoryName" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="usp_UpdateCustomer" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="id" Type="int" Mode="In" />
+          <Parameter Name="firstName" Type="nvarchar" Mode="In" />
+          <Parameter Name="lastName" Type="nvarchar" Mode="In" />
+          <Parameter Name="adrs" Type="nvarchar(max)" Mode="In" />
+          <Parameter Name="city" Type="nvarchar" Mode="In" />
+          <Parameter Name="region" Type="nvarchar" Mode="In" />
+          <Parameter Name="country" Type="nvarchar" Mode="In" />
+          <Parameter Name="postalCode" Type="nvarchar" Mode="In" />
+          <Parameter Name="phone" Type="nvarchar" Mode="In" />
+          <Parameter Name="email" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="usp_UpdateProduct" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="id" Type="int" Mode="In" />
+          <Parameter Name="productName" Type="nvarchar" Mode="In" />
+          <Parameter Name="productDescription" Type="nvarchar" Mode="In" />
+          <Parameter Name="unitPrice" Type="money" Mode="In" />
+          <Parameter Name="category_Ref" Type="int" Mode="In" />
+        </Function>
+        <EntityContainer Name="OnlineShopModelStoreContainer">
+          <EntitySet Name="Customer" EntityType="Self.Customer" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="OrderDetails" EntityType="Self.OrderDetails" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="OrderMaster" EntityType="Self.OrderMaster" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Product" EntityType="Self.Product" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ProductCategory" EntityType="Self.ProductCategory" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK__OrderDeta__Order__49C3F6B7" Association="Self.FK__OrderDeta__Order__49C3F6B7">
+            <End Role="OrderMaster" EntitySet="OrderMaster" />
+            <End Role="OrderDetails" EntitySet="OrderDetails" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Product__Categor__276EDEB3" Association="Self.FK__Product__Categor__276EDEB3">
+            <End Role="ProductCategory" EntitySet="ProductCategory" />
+            <End Role="Product" EntitySet="Product" />
+          </AssociationSet>
+          <AssociationSet Name="FK_OrderMaster_Customer" Association="Self.FK_OrderMaster_Customer">
+            <End Role="Customer" EntitySet="Customer" />
+            <End Role="OrderMaster" EntitySet="OrderMaster" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="OnlineShopModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Customer">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CustomerCode" Type="Int32" />
+          <Property Name="FirstName" Type="String" MaxLength="60" FixedLength="false" Unicode="true" />
+          <Property Name="LastName" Type="String" MaxLength="60" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Adrs" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="City" Type="String" MaxLength="15" FixedLength="false" Unicode="true" />
+          <Property Name="Region" Type="String" MaxLength="15" FixedLength="false" Unicode="true" />
+          <Property Name="Country" Type="String" MaxLength="15" FixedLength="false" Unicode="true" />
+          <Property Name="PostalCode" Type="String" MaxLength="15" FixedLength="false" Unicode="true" />
+          <Property Name="Phone" Type="String" MaxLength="24" FixedLength="false" Unicode="true" />
+          <Property Name="Email" Type="String" MaxLength="40" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="OrderMaster" Relationship="Self.FK_OrderMaster_Customer" FromRole="Customer" ToRole="OrderMaster" />
+        </EntityType>
+        <EntityType Name="OrderDetails">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UnitPrice" Type="Decimal" Precision="19" Scale="4" Nullable="false" />
+          <Property Name="Discount" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="TaxRate" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="Quantity" Type="Int32" Nullable="false" />
+          <Property Name="Product_Ref" Type="Int32" Nullable="false" />
+          <Property Name="OrderMaster_Ref" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="OrderMaster" Relationship="Self.FK__OrderDeta__Order__49C3F6B7" FromRole="OrderDetails" ToRole="OrderMaster" />
+          <NavigationProperty Name="Product" Relationship="Self.FK__OrderDeta__Produ__48CFD27E" FromRole="OrderDetails" ToRole="Product" />
+        </EntityType>
+        <EntityType Name="OrderMaster">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="OrderDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Customer_Ref" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Customer" Relationship="Self.FK_OrderMaster_Customer" FromRole="OrderMaster" ToRole="Customer" />
+          <NavigationProperty Name="OrderDetails" Relationship="Self.FK__OrderDeta__Order__49C3F6B7" FromRole="OrderMaster" ToRole="OrderDetails" />
+          <Property Name="OrderCode" Type="Int32" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Product">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ProductCode" Type="Int32" Nullable="false" />
+          <Property Name="ProductName" Type="String" MaxLength="60" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="ProductDescription" Type="String" MaxLength="260" FixedLength="false" Unicode="true" />
+          <Property Name="UnitPrice" Type="Decimal" Precision="19" Scale="4" />
+          <Property Name="Category_Ref" Type="Int32" />
+          <NavigationProperty Name="OrderDetails" Relationship="Self.FK__OrderDeta__Produ__48CFD27E" FromRole="Product" ToRole="OrderDetails" />
+          <NavigationProperty Name="ProductCategory" Relationship="Self.FK__Product__Categor__276EDEB3" FromRole="Product" ToRole="ProductCategory" />
+        </EntityType>
+        <EntityType Name="ProductCategory">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CategoryCode" Type="Int32" Nullable="false" />
+          <Property Name="CategoryName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="Product" Relationship="Self.FK__Product__Categor__276EDEB3" FromRole="ProductCategory" ToRole="Product" />
+        </EntityType>
+        <Association Name="FK_OrderMaster_Customer">
+          <End Role="Customer" Type="Self.Customer" Multiplicity="1" />
+          <End Role="OrderMaster" Type="Self.OrderMaster" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Customer">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="OrderMaster">
+              <PropertyRef Name="Customer_Ref" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__OrderDeta__Order__49C3F6B7">
+          <End Role="OrderMaster" Type="Self.OrderMaster" Multiplicity="1" />
+          <End Role="OrderDetails" Type="Self.OrderDetails" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="OrderMaster">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="OrderDetails">
+              <PropertyRef Name="OrderMaster_Ref" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__OrderDeta__Produ__48CFD27E">
+          <End Role="Product" Type="Self.Product" Multiplicity="1" />
+          <End Role="OrderDetails" Type="Self.OrderDetails" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Product">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="OrderDetails">
+              <PropertyRef Name="Product_Ref" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Product__Categor__276EDEB3">
+          <End Role="ProductCategory" Type="Self.ProductCategory" Multiplicity="0..1" />
+          <End Role="Product" Type="Self.Product" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ProductCategory">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Product">
+              <PropertyRef Name="Category_Ref" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="OnlineShopEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Customer" EntityType="Self.Customer" />
+          <EntitySet Name="OrderDetails" EntityType="Self.OrderDetails" />
+          <EntitySet Name="OrderMaster" EntityType="Self.OrderMaster" />
+          <EntitySet Name="Product" EntityType="Self.Product" />
+          <EntitySet Name="ProductCategory" EntityType="Self.ProductCategory" />
+          <AssociationSet Name="FK_OrderMaster_Customer" Association="Self.FK_OrderMaster_Customer">
+            <End Role="Customer" EntitySet="Customer" />
+            <End Role="OrderMaster" EntitySet="OrderMaster" />
+          </AssociationSet>
+          <AssociationSet Name="FK__OrderDeta__Order__49C3F6B7" Association="Self.FK__OrderDeta__Order__49C3F6B7">
+            <End Role="OrderMaster" EntitySet="OrderMaster" />
+            <End Role="OrderDetails" EntitySet="OrderDetails" />
+          </AssociationSet>
+          <AssociationSet Name="FK__OrderDeta__Produ__48CFD27E" Association="Self.FK__OrderDeta__Produ__48CFD27E">
+            <End Role="Product" EntitySet="Product" />
+            <End Role="OrderDetails" EntitySet="OrderDetails" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Product__Categor__276EDEB3" Association="Self.FK__Product__Categor__276EDEB3">
+            <End Role="ProductCategory" EntitySet="ProductCategory" />
+            <End Role="Product" EntitySet="Product" />
+          </AssociationSet>
+          <FunctionImport Name="usp_DeleteFromCategory">
+          <Parameter Name="id" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="usp_DeleteFromCustomer">
+          <Parameter Name="id" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="usp_DeleteFromProduct">
+          <Parameter Name="id" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="usp_InsertCustomerInfo">
+            <Parameter Name="firstName" Mode="In" Type="String" />
+            <Parameter Name="lastName" Mode="In" Type="String" />
+            <Parameter Name="adrs" Mode="In" Type="String" />
+            <Parameter Name="city" Mode="In" Type="String" />
+            <Parameter Name="region" Mode="In" Type="String" />
+            <Parameter Name="country" Mode="In" Type="String" />
+            <Parameter Name="postalCode" Mode="In" Type="String" />
+            <Parameter Name="phone" Mode="In" Type="String" />
+            <Parameter Name="email" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="usp_InsertProductCategoryInfo">
+          <Parameter Name="categoryName" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="usp_InsertProductInfo">
+            <Parameter Name="productName" Mode="In" Type="String" />
+            <Parameter Name="productDescription" Mode="In" Type="String" />
+            <Parameter Name="unitPrice" Mode="In" Type="Decimal" />
+            <Parameter Name="category_Ref" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="usp_UpdateCategory">
+            <Parameter Name="id" Mode="In" Type="Int32" />
+            <Parameter Name="categoryName" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="usp_UpdateCustomer">
+            <Parameter Name="id" Mode="In" Type="Int32" />
+            <Parameter Name="firstName" Mode="In" Type="String" />
+            <Parameter Name="lastName" Mode="In" Type="String" />
+            <Parameter Name="adrs" Mode="In" Type="String" />
+            <Parameter Name="city" Mode="In" Type="String" />
+            <Parameter Name="region" Mode="In" Type="String" />
+            <Parameter Name="country" Mode="In" Type="String" />
+            <Parameter Name="postalCode" Mode="In" Type="String" />
+            <Parameter Name="phone" Mode="In" Type="String" />
+            <Parameter Name="email" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="usp_UpdateProduct">
+            <Parameter Name="id" Mode="In" Type="Int32" />
+            <Parameter Name="productName" Mode="In" Type="String" />
+            <Parameter Name="productDescription" Mode="In" Type="String" />
+            <Parameter Name="unitPrice" Mode="In" Type="Decimal" />
+            <Parameter Name="category_Ref" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="usp_OrderDetails_Delet">
+          <Parameter Name="id" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="usp_OrderDetails_Insert">
+            <Parameter Name="unitPrice" Mode="In" Type="Decimal" />
+            <Parameter Name="discount" Mode="In" Type="Decimal" />
+            <Parameter Name="taxRate" Mode="In" Type="Decimal" />
+            <Parameter Name="quantity" Mode="In" Type="Int32" />
+            <Parameter Name="product_Ref" Mode="In" Type="Int32" />
+            <Parameter Name="orderMaster_Ref" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="usp_OrderDetails_Update">
+            <Parameter Name="id" Mode="In" Type="Int32" />
+            <Parameter Name="unitPrice" Mode="In" Type="Decimal" />
+            <Parameter Name="discount" Mode="In" Type="Decimal" />
+            <Parameter Name="taxRate" Mode="In" Type="Decimal" />
+            <Parameter Name="quantity" Mode="In" Type="Int32" />
+            <Parameter Name="product_Ref" Mode="In" Type="Int32" />
+            <Parameter Name="orderMaster_Ref" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="usp_OrderMaster_Delete">
+          <Parameter Name="id" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="usp_OrderMaster_Insert">
+            <Parameter Name="orderDate" Mode="In" Type="DateTime" />
+            <Parameter Name="customer_Ref" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="usp_OrderMaster_Update">
+            <Parameter Name="id" Mode="In" Type="Int32" />
+            <Parameter Name="orderDate" Mode="In" Type="DateTime" />
+            <Parameter Name="customer_Ref" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="usp_OrderMasterDetails_Insert">
+            <Parameter Name="orderCode" Mode="In" Type="Int32" />
+            <Parameter Name="orderDate" Mode="In" Type="DateTime" />
+            <Parameter Name="customer_Ref" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="usp_OrderMasterDetails_Update">
+            <Parameter Name="idMaster" Mode="In" Type="Int32" />
+            <Parameter Name="orderCode" Mode="In" Type="Int32" />
+            <Parameter Name="orderDate" Mode="In" Type="DateTime" />
+            <Parameter Name="customer_Ref" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="usp_OrderMasterDetails_Delete">
+          <Parameter Name="id" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="usp_Customer_Select" EntitySet="Customer" ReturnType="Collection(OnlineShopModel.Customer)" />
+          <FunctionImport Name="usp_ProductCategory_Select" EntitySet="ProductCategory" ReturnType="Collection(OnlineShopModel.ProductCategory)" />
+          <FunctionImport Name="usp_Product_Select" EntitySet="Product" ReturnType="Collection(OnlineShopModel.Product)" />
+          <FunctionImport Name="usp_Product_SelectWithCategoryCode" ReturnType="Collection(OnlineShopModel.usp_Product_SelectWithCategoryCode_Result)" />
+          <FunctionImport Name="usp_SelectCustomerInfo" ReturnType="Collection(OnlineShopModel.usp_SelectCustomerInfo_Result1)" />
+          <FunctionImport Name="usp_SelectProductInfo" ReturnType="Collection(OnlineShopModel.usp_SelectProductInfo_Result1)" />
+          <FunctionImport Name="usp_SelectCategoryCode" ReturnType="Collection(OnlineShopModel.usp_SelectCategoryCode_Result)" />
+          <FunctionImport Name="usp_SelectCustomerNameGivenId" EntitySet="Customer" ReturnType="Collection(OnlineShopModel.Customer)">
+            <Parameter Name="id" Mode="In" Type="Int32" />
+            <Parameter Name="firstName" Mode="InOut" Type="String" />
+            <Parameter Name="lastName" Mode="InOut" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="usp_GetOrderDetailsGivenOrderMasterId" ReturnType="Collection(OnlineShopModel.usp_GetOrderDetailsGivenOrderMasterId_Result2)">
+          <Parameter Name="orderMasterId" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="usp_SelectProductNameGivenId" EntitySet="Product" ReturnType="Collection(OnlineShopModel.Product)">
+            <Parameter Name="id" Mode="In" Type="Int32" />
+            <Parameter Name="productName" Mode="InOut" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="usp_GenerateCodeForOrder">
+            <Parameter Name="orderCode" Mode="InOut" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="usp_OrderMaster_Select" ReturnType="Collection(OnlineShopModel.usp_OrderMaster_Select_Result2)" />
+        </EntityContainer>
+        <ComplexType Name="usp_GetOrderDetailsGivenOrderMasterId_Result">
+          <Property Type="Int32" Name="Id" Nullable="false" />
+          <Property Type="Decimal" Name="UnitPrice" Nullable="false" Precision="19" />
+          <Property Type="Decimal" Name="Discount" Nullable="false" Precision="18" Scale="2" />
+          <Property Type="Decimal" Name="TaxRate" Nullable="false" Precision="18" Scale="2" />
+          <Property Type="Int32" Name="Quantity" Nullable="false" />
+          <Property Type="Int32" Name="Product_Ref" Nullable="false" />
+          <Property Type="Int32" Name="OrderMaster_Ref" Nullable="false" />
+        </ComplexType>
+        <ComplexType Name="usp_Customer_Select_Result">
+          <Property Type="Int32" Name="Id" Nullable="false" />
+          <Property Type="Int32" Name="CustomerCode" Nullable="true" />
+          <Property Type="String" Name="FirstName" Nullable="true" MaxLength="60" />
+          <Property Type="String" Name="LastName" Nullable="false" MaxLength="60" />
+          <Property Type="String" Name="Adrs" Nullable="true" />
+          <Property Type="String" Name="City" Nullable="true" MaxLength="15" />
+          <Property Type="String" Name="Region" Nullable="true" MaxLength="15" />
+          <Property Type="String" Name="Country" Nullable="true" MaxLength="15" />
+          <Property Type="String" Name="PostalCode" Nullable="true" MaxLength="15" />
+          <Property Type="String" Name="Phone" Nullable="true" MaxLength="24" />
+          <Property Type="String" Name="Email" Nullable="true" MaxLength="40" />
+        </ComplexType>
+        <ComplexType Name="usp_OrderMaster_Select_Result">
+          <Property Type="Int32" Name="Id" Nullable="false" />
+          <Property Type="DateTime" Name="OrderDate" Nullable="false" Precision="23" />
+          <Property Type="Int32" Name="Customer_Ref" Nullable="true" />
+        </ComplexType>
+        <ComplexType Name="usp_Product_Select_Result">
+          <Property Type="Int32" Name="Id" Nullable="false" />
+          <Property Type="Int32" Name="ProductCode" Nullable="false" />
+          <Property Type="String" Name="ProductName" Nullable="false" MaxLength="60" />
+          <Property Type="String" Name="ProductDescription" Nullable="true" MaxLength="260" />
+          <Property Type="Decimal" Name="UnitPrice" Nullable="true" Precision="19" />
+          <Property Type="Int32" Name="Category_Ref" Nullable="true" />
+        </ComplexType>
+        <ComplexType Name="usp_ProductCategory_Select_Result">
+          <Property Type="Int32" Name="Id" Nullable="false" />
+          <Property Type="Int32" Name="CategoryCode" Nullable="false" />
+          <Property Type="String" Name="CategoryName" Nullable="false" MaxLength="50" />
+        </ComplexType>
+        <ComplexType Name="usp_Product_Select_Result1">
+          <Property Type="Int32" Name="Id" Nullable="false" />
+          <Property Type="Int32" Name="ProductCode" Nullable="false" />
+          <Property Type="String" Name="ProductName" Nullable="false" MaxLength="60" />
+          <Property Type="String" Name="ProductDescription" Nullable="true" MaxLength="260" />
+          <Property Type="Decimal" Name="UnitPrice" Nullable="true" Precision="19" />
+          <Property Type="Int32" Name="CategoryCode" Nullable="false" />
+        </ComplexType>
+        <ComplexType Name="usp_Product_SelectWithCategoryCode_Result">
+          <Property Type="Int32" Name="Id" Nullable="false" />
+          <Property Type="Int32" Name="ProductCode" Nullable="false" />
+          <Property Type="String" Name="ProductName" Nullable="false" MaxLength="60" />
+          <Property Type="String" Name="ProductDescription" Nullable="true" MaxLength="260" />
+          <Property Type="Decimal" Name="UnitPrice" Nullable="true" Precision="19" />
+          <Property Type="Int32" Name="CategoryCode" Nullable="false" />
+        </ComplexType>
+        <ComplexType Name="usp_GetOrderDetailsGivenOrderMasterId_Result1">
+          <Property Type="Int32" Name="Id" Nullable="false" />
+          <Property Type="Decimal" Name="UnitPrice" Nullable="false" Precision="19" />
+          <Property Type="Decimal" Name="Discount" Nullable="false" Precision="18" Scale="2" />
+          <Property Type="Decimal" Name="TaxRate" Nullable="false" Precision="18" Scale="2" />
+          <Property Type="Int32" Name="Quantity" Nullable="false" />
+          <Property Type="Int32" Name="ProductCode" Nullable="false" />
+          <Property Type="Int32" Name="OrderMaster_Ref" Nullable="false" />
+        </ComplexType>
+        <ComplexType Name="usp_SelectCustomerInfo_Result">
+          <Property Type="Int32" Name="Id" Nullable="false" />
+          <Property Type="Int32" Name="CustomerCode" Nullable="true" />
+          <Property Type="String" Name="FirstName" Nullable="true" MaxLength="60" />
+          <Property Type="String" Name="LastName" Nullable="false" MaxLength="60" />
+        </ComplexType>
+        <ComplexType Name="usp_SelectProductInfo_Result">
+          <Property Type="Int32" Name="Id" Nullable="false" />
+          <Property Type="Int32" Name="ProductCode" Nullable="false" />
+          <Property Type="String" Name="ProductName" Nullable="false" MaxLength="60" />
+        </ComplexType>
+        <ComplexType Name="usp_SelectCustomerInfo_Result1">
+          <Property Type="Int32" Name="Id" Nullable="false" />
+          <Property Type="Int32" Name="CustomerCode" Nullable="true" />
+        </ComplexType>
+        <ComplexType Name="usp_SelectProductInfo_Result1">
+          <Property Type="Int32" Name="Id" Nullable="false" />
+          <Property Type="Int32" Name="ProductCode" Nullable="false" />
+        </ComplexType>
+        <ComplexType Name="usp_SelectCategoryCode_Result">
+          <Property Type="Int32" Name="Id" Nullable="false" />
+          <Property Type="Int32" Name="CategoryCode" Nullable="false" />
+        </ComplexType>
+        <ComplexType Name="usp_SelectCustomerNameGivenId_Result">
+          <Property Type="String" Name="FirstName" Nullable="true" MaxLength="60" />
+          <Property Type="String" Name="LastName" Nullable="false" MaxLength="60" />
+        </ComplexType>
+        <ComplexType Name="usp_OrderMaster_Select_Result1">
+          <Property Type="Int32" Name="Id" Nullable="false" />
+          <Property Type="DateTime" Name="OrderDate" Nullable="false" Precision="23" />
+          <Property Type="Int32" Name="Customer_Ref" Nullable="true" />
+          <Property Type="Int32" Name="CustomerCode" Nullable="true" />
+        </ComplexType>
+        <ComplexType Name="usp_GetOrderDetailsGivenOrderMasterId_Result2">
+          <Property Type="Int32" Name="Id" Nullable="false" />
+          <Property Type="Decimal" Name="UnitPrice" Nullable="false" Precision="19" />
+          <Property Type="Decimal" Name="Discount" Nullable="false" Precision="18" Scale="2" />
+          <Property Type="Decimal" Name="TaxRate" Nullable="false" Precision="18" Scale="2" />
+          <Property Type="Int32" Name="Quantity" Nullable="false" />
+          <Property Type="Int32" Name="Product_Ref" Nullable="false" />
+          <Property Type="Int32" Name="OrderMaster_Ref" Nullable="false" />
+          <Property Type="Int32" Name="ProductCode" Nullable="false" />
+        </ComplexType>
+        <ComplexType Name="usp_OrderMaster_Select_Result2">
+          <Property Type="Int32" Name="Id" Nullable="false" />
+          <Property Type="Int32" Name="OrderCode" Nullable="false" />
+          <Property Type="DateTime" Name="OrderDate" Nullable="false" Precision="23" />
+          <Property Type="Int32" Name="Customer_Ref" Nullable="false" />
+          <Property Type="Int32" Name="CustomerCode" Nullable="true" />
+        </ComplexType>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="OnlineShopModelStoreContainer" CdmEntityContainer="OnlineShopEntities">
+          <EntitySetMapping Name="Customer">
+            <EntityTypeMapping TypeName="OnlineShopModel.Customer">
+              <MappingFragment StoreEntitySet="Customer">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="CustomerCode" ColumnName="CustomerCode" />
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+                <ScalarProperty Name="LastName" ColumnName="LastName" />
+                <ScalarProperty Name="Adrs" ColumnName="Adrs" />
+                <ScalarProperty Name="City" ColumnName="City" />
+                <ScalarProperty Name="Region" ColumnName="Region" />
+                <ScalarProperty Name="Country" ColumnName="Country" />
+                <ScalarProperty Name="PostalCode" ColumnName="PostalCode" />
+                <ScalarProperty Name="Phone" ColumnName="Phone" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+              </MappingFragment>
+            </EntityTypeMapping>
+            <EntityTypeMapping TypeName="OnlineShopModel.Customer">
+              <ModificationFunctionMapping>
+                <InsertFunction FunctionName="OnlineShopModel.Store.usp_InsertCustomerInfo" >
+                  <ScalarProperty Name="Email" ParameterName="email" />
+                  <ScalarProperty Name="Phone" ParameterName="phone" />
+                  <ScalarProperty Name="PostalCode" ParameterName="postalCode" />
+                  <ScalarProperty Name="Country" ParameterName="country" />
+                  <ScalarProperty Name="Region" ParameterName="region" />
+                  <ScalarProperty Name="City" ParameterName="city" />
+                  <ScalarProperty Name="Adrs" ParameterName="adrs" />
+                  <ScalarProperty Name="FirstName" ParameterName="lastName" />
+                  <ScalarProperty Name="FirstName" ParameterName="firstName" />
+                </InsertFunction>
+                <UpdateFunction FunctionName="OnlineShopModel.Store.usp_UpdateCustomer" >
+                  <ScalarProperty Name="Email" ParameterName="email" Version="Current" />
+                  <ScalarProperty Name="Phone" ParameterName="phone" Version="Current" />
+                  <ScalarProperty Name="PostalCode" ParameterName="postalCode" Version="Current" />
+                  <ScalarProperty Name="Country" ParameterName="country" Version="Current" />
+                  <ScalarProperty Name="Region" ParameterName="region" Version="Current" />
+                  <ScalarProperty Name="City" ParameterName="city" Version="Current" />
+                  <ScalarProperty Name="Adrs" ParameterName="adrs" Version="Current" />
+                  <ScalarProperty Name="LastName" ParameterName="lastName" Version="Current" />
+                  <ScalarProperty Name="FirstName" ParameterName="firstName" Version="Current" />
+                  <ScalarProperty Name="Id" ParameterName="id" Version="Current" />
+                </UpdateFunction>
+                <DeleteFunction FunctionName="OnlineShopModel.Store.usp_DeleteFromCustomer" >
+                  <ScalarProperty Name="Id" ParameterName="id" />
+                </DeleteFunction>
+              </ModificationFunctionMapping>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="OrderDetails">
+            <EntityTypeMapping TypeName="OnlineShopModel.OrderDetails">
+              <MappingFragment StoreEntitySet="OrderDetails">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="UnitPrice" ColumnName="UnitPrice" />
+                <ScalarProperty Name="Discount" ColumnName="Discount" />
+                <ScalarProperty Name="TaxRate" ColumnName="TaxRate" />
+                <ScalarProperty Name="Quantity" ColumnName="Quantity" />
+                <ScalarProperty Name="Product_Ref" ColumnName="Product_Ref" />
+                <ScalarProperty Name="OrderMaster_Ref" ColumnName="OrderMaster_Ref" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="OrderMaster">
+            <EntityTypeMapping TypeName="OnlineShopModel.OrderMaster">
+              <MappingFragment StoreEntitySet="OrderMaster">
+                <ScalarProperty Name="OrderCode" ColumnName="OrderCode" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="OrderDate" ColumnName="OrderDate" />
+                <ScalarProperty Name="Customer_Ref" ColumnName="Customer_Ref" />
+              </MappingFragment>
+            </EntityTypeMapping>
+            <EntityTypeMapping TypeName="OnlineShopModel.OrderMaster">
+              <ModificationFunctionMapping>
+                <DeleteFunction FunctionName="OnlineShopModel.Store.usp_OrderMasterDetails_Delete" >
+                  <ScalarProperty Name="Id" ParameterName="id" />
+                </DeleteFunction>
+              </ModificationFunctionMapping>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Product">
+            <EntityTypeMapping TypeName="OnlineShopModel.Product">
+              <MappingFragment StoreEntitySet="Product">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="ProductCode" ColumnName="ProductCode" />
+                <ScalarProperty Name="ProductName" ColumnName="ProductName" />
+                <ScalarProperty Name="ProductDescription" ColumnName="ProductDescription" />
+                <ScalarProperty Name="UnitPrice" ColumnName="UnitPrice" />
+                <ScalarProperty Name="Category_Ref" ColumnName="Category_Ref" />
+              </MappingFragment>
+            </EntityTypeMapping>
+            <EntityTypeMapping TypeName="OnlineShopModel.Product">
+              <ModificationFunctionMapping>
+                <InsertFunction FunctionName="OnlineShopModel.Store.usp_InsertProductInfo" >
+                  <ScalarProperty Name="Category_Ref" ParameterName="category_Ref" />
+                  <ScalarProperty Name="UnitPrice" ParameterName="unitPrice" />
+                  <ScalarProperty Name="ProductDescription" ParameterName="productDescription" />
+                  <ScalarProperty Name="ProductName" ParameterName="productName" />
+                </InsertFunction>
+                <UpdateFunction FunctionName="OnlineShopModel.Store.usp_UpdateProduct" >
+                  <ScalarProperty Name="Category_Ref" ParameterName="category_Ref" Version="Current" />
+                  <ScalarProperty Name="UnitPrice" ParameterName="unitPrice" Version="Current" />
+                  <ScalarProperty Name="ProductDescription" ParameterName="productDescription" Version="Current" />
+                  <ScalarProperty Name="ProductName" ParameterName="productName" Version="Current" />
+                  <ScalarProperty Name="Id" ParameterName="id" Version="Current" />
+                </UpdateFunction>
+                <DeleteFunction FunctionName="OnlineShopModel.Store.usp_DeleteFromProduct" >
+                  <ScalarProperty Name="Id" ParameterName="id" />
+                </DeleteFunction>
+              </ModificationFunctionMapping>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ProductCategory">
+            <EntityTypeMapping TypeName="OnlineShopModel.ProductCategory">
+              <MappingFragment StoreEntitySet="ProductCategory">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="CategoryCode" ColumnName="CategoryCode" />
+                <ScalarProperty Name="CategoryName" ColumnName="CategoryName" />
+              </MappingFragment>
+            </EntityTypeMapping>
+            <EntityTypeMapping TypeName="OnlineShopModel.ProductCategory">
+              <ModificationFunctionMapping>
+                <InsertFunction FunctionName="OnlineShopModel.Store.usp_InsertProductCategoryInfo" >
+                <ScalarProperty Name="CategoryName" ParameterName="categoryName" />
+                </InsertFunction>
+                <UpdateFunction FunctionName="OnlineShopModel.Store.usp_UpdateCategory" >
+                  <ScalarProperty Name="CategoryName" ParameterName="categoryName" Version="Current" />
+                  <ScalarProperty Name="Id" ParameterName="id" Version="Current" />
+                </UpdateFunction>
+                <DeleteFunction FunctionName="OnlineShopModel.Store.usp_DeleteFromCategory" >
+                  <ScalarProperty Name="Id" ParameterName="id" />
+                </DeleteFunction>
+              </ModificationFunctionMapping>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="usp_DeleteFromCategory" FunctionName="OnlineShopModel.Store.usp_DeleteFromCategory" />
+          <FunctionImportMapping FunctionImportName="usp_DeleteFromCustomer" FunctionName="OnlineShopModel.Store.usp_DeleteFromCustomer" />
+          <FunctionImportMapping FunctionImportName="usp_DeleteFromProduct" FunctionName="OnlineShopModel.Store.usp_DeleteFromProduct" />
+          <FunctionImportMapping FunctionImportName="usp_InsertCustomerInfo" FunctionName="OnlineShopModel.Store.usp_InsertCustomerInfo" />
+          <FunctionImportMapping FunctionImportName="usp_InsertProductCategoryInfo" FunctionName="OnlineShopModel.Store.usp_InsertProductCategoryInfo" />
+          <FunctionImportMapping FunctionImportName="usp_InsertProductInfo" FunctionName="OnlineShopModel.Store.usp_InsertProductInfo" />
+          <FunctionImportMapping FunctionImportName="usp_UpdateCategory" FunctionName="OnlineShopModel.Store.usp_UpdateCategory" />
+          <FunctionImportMapping FunctionImportName="usp_UpdateCustomer" FunctionName="OnlineShopModel.Store.usp_UpdateCustomer" />
+          <FunctionImportMapping FunctionImportName="usp_UpdateProduct" FunctionName="OnlineShopModel.Store.usp_UpdateProduct" />
+          <FunctionImportMapping FunctionImportName="usp_OrderMasterDetails_Insert" FunctionName="OnlineShopModel.Store.usp_OrderMasterDetails_Insert" />
+          <FunctionImportMapping FunctionImportName="usp_OrderMasterDetails_Update" FunctionName="OnlineShopModel.Store.usp_OrderMasterDetails_Update" />
+          <FunctionImportMapping FunctionImportName="usp_OrderMasterDetails_Delete" FunctionName="OnlineShopModel.Store.usp_OrderMasterDetails_Delete" />
+          <FunctionImportMapping FunctionImportName="usp_Customer_Select" FunctionName="OnlineShopModel.Store.usp_Customer_Select">
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="usp_ProductCategory_Select" FunctionName="OnlineShopModel.Store.usp_ProductCategory_Select">
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="usp_Product_Select" FunctionName="OnlineShopModel.Store.usp_Product_Select">
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="usp_Product_SelectWithCategoryCode" FunctionName="OnlineShopModel.Store.usp_Product_SelectWithCategoryCode">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="OnlineShopModel.usp_Product_SelectWithCategoryCode_Result">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="ProductCode" ColumnName="ProductCode" />
+                <ScalarProperty Name="ProductName" ColumnName="ProductName" />
+                <ScalarProperty Name="ProductDescription" ColumnName="ProductDescription" />
+                <ScalarProperty Name="UnitPrice" ColumnName="UnitPrice" />
+                <ScalarProperty Name="CategoryCode" ColumnName="CategoryCode" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="usp_SelectCustomerInfo" FunctionName="OnlineShopModel.Store.usp_SelectCustomerInfo">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="OnlineShopModel.usp_SelectCustomerInfo_Result1">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="CustomerCode" ColumnName="CustomerCode" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="usp_SelectProductInfo" FunctionName="OnlineShopModel.Store.usp_SelectProductInfo">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="OnlineShopModel.usp_SelectProductInfo_Result1">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="ProductCode" ColumnName="ProductCode" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="usp_SelectCategoryCode" FunctionName="OnlineShopModel.Store.usp_SelectCategoryCode">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="OnlineShopModel.usp_SelectCategoryCode_Result">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="CategoryCode" ColumnName="CategoryCode" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="usp_SelectCustomerNameGivenId" FunctionName="OnlineShopModel.Store.usp_SelectCustomerNameGivenId">
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="usp_GetOrderDetailsGivenOrderMasterId" FunctionName="OnlineShopModel.Store.usp_GetOrderDetailsGivenOrderMasterId">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="OnlineShopModel.usp_GetOrderDetailsGivenOrderMasterId_Result2">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="UnitPrice" ColumnName="UnitPrice" />
+                <ScalarProperty Name="Discount" ColumnName="Discount" />
+                <ScalarProperty Name="TaxRate" ColumnName="TaxRate" />
+                <ScalarProperty Name="Quantity" ColumnName="Quantity" />
+                <ScalarProperty Name="Product_Ref" ColumnName="Product_Ref" />
+                <ScalarProperty Name="OrderMaster_Ref" ColumnName="OrderMaster_Ref" />
+                <ScalarProperty Name="ProductCode" ColumnName="ProductCode" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="usp_SelectProductNameGivenId" FunctionName="OnlineShopModel.Store.usp_SelectProductNameGivenId" />
+          <FunctionImportMapping FunctionImportName="usp_GenerateCodeForOrder" FunctionName="OnlineShopModel.Store.usp_GenerateCodeForOrder" />
+          <FunctionImportMapping FunctionImportName="usp_OrderMaster_Select" FunctionName="OnlineShopModel.Store.usp_OrderMaster_Select">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="OnlineShopModel.usp_OrderMaster_Select_Result2">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="OrderCode" ColumnName="OrderCode" />
+                <ScalarProperty Name="OrderDate" ColumnName="OrderDate" />
+                <ScalarProperty Name="Customer_Ref" ColumnName="Customer_Ref" />
+                <ScalarProperty Name="CustomerCode" ColumnName="CustomerCode" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="false" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
